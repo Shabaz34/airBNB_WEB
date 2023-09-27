@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html>
+  <head>
+    <title>Airbnb</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css"
+    />
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="apartments.js"></script>
+    <script src="functions.js"></script>
+    <link href="OurStyle.css" rel="stylesheet" />
+
+    <script>
+      function initOrders() {
+        getFromLS();
+        const ArrOrder = cgroup40.usersArr[cgroup40.loginUser[0].user].orders;
+        console.log(ArrOrder);
+        str = "";
+        countOrd = 0;
+        for (var o in ArrOrder) {
+          for (var k in arr) {
+            if (arr[k].id == ArrOrder[o].appID) {
+              console.log(ArrOrder[o].appID);
+              str += '<div class="col-sm-4 col-md-3">';
+              str +=
+                '<div class="brdr bgc-fff pad-10 box-shad btm-mrg-20 property-listing">';
+              str += '<div class="media">';
+              str += `<a href= ${arr[k].listing_url} target="_blank">`;
+              str += `<img src= ${arr[k].picture_url} alt="image" class="img-responsive">`;
+              str += '<h3 class="media-heading">' + arr[k].name + "</h3></a>";
+              str +=
+                '<p class="list-inline mrg-0 btm-mrg-10 clr-535353"> ID:' +
+                arr[k].id +
+                "</p>";
+              str +=
+                '<p id="class="list-inline mrg-0 btm-mrg-10 clr-535353">From- ' +
+                ArrOrder[o].From +
+                " To- " +
+                ArrOrder[o].To +
+                "</p>";
+
+              str += '<p id="hidden-xs">' + arr[k].description + "</p>";
+              str += `<button type="button" class="btn btn-primary" onclick="removeOrder(${arr[k].id})"> Remove </button>`;
+              str += "</div></div></div>";
+              countOrd++;
+            }
+          }
+        }
+        if (countOrd == 0) {
+          str =
+            '<div class="col"><h3>There are no appartments oredered</h3></div>';
+        }
+        document.getElementById("ph").innerHTML = str;
+      }
+
+      function removeOrder(assetID) {
+        let user = cgroup40.loginUser[0].user;
+        let array = cgroup40.usersArr[user].orders;
+        for (var k in array) {
+          if (array[k].appID == assetID) {
+            delete array[k];
+          }
+        }
+        localStorage["cgroup40"] = JSON.stringify(cgroup40);
+        initOrders();
+      }
+    </script>
+  </head>
+
+  <body onload="initOrders()">
+    <div class="container-fluid">
+      <!--Header-->
+      <div class="container-pad" id="property-listings">
+        <div class="row">
+          <div class="col">
+            <a href="HomePage after register.html" id="logo">
+              <img src="airbnb_logo.jpg" />
+            </a>
+          </div>
+        </div>
+        <div class="row header Orders">
+          <div class="col">
+            <a href="Favorites.html">
+              <input type="button" value="My Wish List" class="btn" />
+            </a>
+            <a href="Orders.html">
+              <input type="button" class="btn" value="My Orders" />
+            </a>
+            <a href="Login.html">
+              <input
+                type="button"
+                class="btn"
+                value="Log Out"
+                onclick="clearLS()"
+              />
+            </a>
+          </div>
+        </div>
+        <div class="container-pad" id="property-listings">
+          <div class="row">
+            <div class="col">
+              <h1>My Orders</h1>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div id="ph"></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

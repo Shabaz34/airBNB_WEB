@@ -1,0 +1,168 @@
+﻿<html>
+  <head>
+    <title>Airbnb</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    />
+    <link href="OurStylePayment.css" rel="stylesheet" />
+    <script src="functions.js"></script>
+    <script src="apartments.js"></script>
+
+    <script>
+      function initPayment() {
+        getFromLS();
+        const currentOrder =
+          cgroup40.usersArr[cgroup40.loginUser[0].user].orders;
+
+        console.log(currentOrder);
+
+        appID = cgroup40.loginUser[0].app;
+        console.log(appID);
+        str = "";
+        strbill = "";
+
+        for (var r in currentOrder) {
+          for (var k in arr) {
+            if (arr[k].id == currentOrder[r].appID) {
+              let price = Number(arr[k].price.split("$")[1]);
+              str = '<div class="media">';
+              str += `<a href= ${arr[k].listing_url} target="_blank">`;
+              str += `<img src= ${arr[k].picture_url} alt="image" class="img-responsive">`;
+              str += '<h4 class="media-heading">' + arr[k].name + "</h4></a>";
+              str += `<p>Dates: <span class="dates">${currentOrder[r].From} - ${currentOrder[r].To}</span></p>`;
+              str += "</div>";
+              document.getElementById("OrderDet").innerHTML = str;
+              strbill = `<p> ${arr[k].price} X ${
+                currentOrder[r].Days
+              } Nights: <span class="price" id="prices">$${
+                price * currentOrder[r].Days
+              }</span></p>`;
+              strbill += '<p>Cleaning fee: <span class="price">$5</span></p>';
+              strbill +=
+                '<p>Service fee: <span class="price">$8</span></p> <hr>';
+              strbill += ` <p>Total <span id="TotalPrice" class="price" style="color:black"><b>$${
+                price * currentOrder[r].Days + 13
+              }</b></span></p>`;
+              document.getElementById("BillDet").innerHTML = strbill;
+            }
+          }
+        }
+      }
+
+      function storePaymantDet() {
+        let id = document.getElementById("cid").value;
+        PaymentDet = {
+          name: document.getElementById("cname").value,
+          cardNum: document.getElementById("ccnum").value,
+          month: document.getElementById("expmonth").value,
+          year: document.getElementById("expyear").value,
+          cvv: document.getElementById("cvv").value,
+        };
+        if (
+          document.getElementById("cname").value == "" ||
+          document.getElementById("ccnum").value == "" ||
+          document.getElementById("expmonth").value == "" ||
+          document.getElementById("expyear").value == "" ||
+          document.getElementById("cvv").value == ""
+        ) {
+          alert("Credit card data are incorrect, please try again");
+          return;
+        }
+
+        cgroup40.usersArr[cgroup40.loginUser[0].user].payments[id] = PaymentDet;
+        localStorage["cgroup40"] = JSON.stringify(cgroup40);
+        alert("The payment was succesful");
+        localStorage["cgroup40"] = JSON.stringify(cgroup40);
+        window.open("HomePage after register.html");
+        window.close();
+      }
+    </script>
+  </head>
+  <body onload="initPayment()">
+    <div class="container-pad">
+      <div class="row">
+        <div class="col-6">
+          <div class="container">
+            <form>
+              <div class="row">
+                <div class="col-6">
+                  <h3>Payment</h3>
+                  <label for="fname">Accepted Cards</label>
+                  <div class="icon-container">
+                    <i class="fa fa-cc-visa" style="color: navy"></i>
+                    <i class="fa fa-cc-amex" style="color: blue"></i>
+                    <i class="fa fa-cc-mastercard" style="color: red"></i>
+                    <i class="fa fa-cc-discover" style="color: orange"></i>
+                  </div>
+                  <label for="cname">Name on Card</label>
+                  <input
+                    type="text"
+                    id="cname"
+                    name="cardname"
+                    placeholder="Brian Joseph Chesky"
+                  />
+                  <label for="cid">ID (of the card owner)</label>
+                  <input
+                    type="text"
+                    id="cid"
+                    name="cardid"
+                    placeholder="123456789"
+                  />
+                  <label for="ccnum">Credit card number</label>
+                  <input
+                    type="text"
+                    id="ccnum"
+                    name="cardnumber"
+                    placeholder="1111-2222-3333-4444"
+                  />
+                  <div class="row">
+                    <div class="col-6">
+                      <label for="expmonth">Exp Month</label>
+                      <input
+                        type="text"
+                        id="expmonth"
+                        name="expmonth"
+                        placeholder="02"
+                      />
+                    </div>
+                    <div class="col-6">
+                      <label for="expyear">Exp Year</label>
+                      <input
+                        type="text"
+                        id="expyear"
+                        name="expyear"
+                        placeholder="26"
+                      />
+                    </div>
+                  </div>
+                  <label for="cvv">CVV</label>
+                  <input type="text" id="cvv" name="cvv" placeholder="352" />
+                  <input
+                    class="btn"
+                    type="submit"
+                    value="Continue to checkout"
+                    onclick="storePaymantDet()"
+                  />
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <div class="col-6">
+          <div class="container">
+            <h3>Order Details</h3>
+            <div id="OrderDet"></div>
+            <hr />
+            <br />
+            <h3>Bill Details</h3>
+            <div id="BillDet"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

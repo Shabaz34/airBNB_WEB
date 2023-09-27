@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Airbnb</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="apartments.js"></script>
+    <link href="OurStyle.css" rel="stylesheet" />
+    <script src="functions.js"></script>
+
+    <script>
+      function init() {
+        getFromLS();
+        const urlParams = new URLSearchParams(window.location.search);
+        const ApID = urlParams.get("AppID");
+
+        for (k in arr) {
+          if (arr[k].id == ApID) {
+            str = `<div class="container-pad" id="property-listings">`;
+            str += `<div class="row">`;
+            str += `<div class="col">`;
+            str += `<h1 class="media-heading">${arr[k].name}</h1>`;
+            str += `</div></div></div>`;
+            str += `<div class="row">`;
+            str += `<div class="col media Order">`;
+            str += `<img src=${arr[k].picture_url} alt="image" class="img-responsive"> <br/>`;
+            str +=
+              '<p class="list-inline mrg-0 btm-mrg-10 clr-535353"> ID:' +
+              arr[k].id +
+              "</p>";
+            str += "<p>" + arr[k].description + "</p>";
+            str += "<p>" + arr[k].neighbourhood + "</p>";
+            str +=
+              '<p class="list-inline mrg-0 btm-mrg-10 clr-535353"> Price per night: ' +
+              arr[k].price +
+              "</p>";
+            str += `<a href=${arr[k].listing_url} target="_blank">For more information</a>`;
+            str += `</div></div>`;
+            str += `<div class="row center">`;
+            str += `<div class="col property">`;
+            str += `<p>From Date</p>`;
+            str += `<input id = "fromD" type = "date" name = "datefilter" value = "" />`;
+            str += `<p>To Date</p>`;
+            str += `<input id = "ToD" type = "date" name = "datefilter" value = "" /> <br />`;
+            str += `<input class="btn-order" type="button" value="Check Availability" onclick="srr(${ApID})" />`;
+            str += `</div></div>`;
+          }
+        }
+
+        let d = document.getElementById("body");
+        d.innerHTML = str;
+      }
+
+      function srr(ApID) {
+        s = document.getElementById("fromD").value;
+        d = document.getElementById("ToD").value;
+        che = 0;
+
+        const date1 = new Date(s);
+        const date2 = new Date(d);
+
+        today = new Date();
+        date =
+          today.getFullYear() +
+          "-" +
+          (today.getMonth() + 1) +
+          "-" +
+          today.getDate();
+
+        today1 = new Date(date);
+
+        console.log(today1);
+        console.log(date1);
+
+        if (
+          date1.getTime() <= today1.getTime() ||
+          date2.getTime() <= today1.getTime()
+        ) {
+          alert("Incorrect date inserted");
+          return;
+        }
+
+        dd = new Date();
+        dd.setDate(date1.getDate() + 1);
+        ss = new Date();
+        ss.setDate(date2.getDate() + 1);
+
+        // One day in milliseconds
+        const oneDay = 1000 * 60 * 60 * 24;
+
+        // Calculating the time difference between two dates
+        const diffInTime = date2.getTime() - date1.getTime();
+
+        // Calculating the no. of days between two dates
+        const diffInDays = Math.round(diffInTime / oneDay);
+
+        for (k in cgroup40.usersArr) {
+          for (r in cgroup40.usersArr[k].orders) {
+            if (cgroup40.usersArr[k].orders[r].appID != ApID) {
+            } else {
+              che++;
+            }
+          }
+        }
+
+        if (diffInDays > 0) {
+          if (che == 0) {
+            userAdd = cgroup40.loginUser[cgroup40.loginUser.length - 1].user;
+
+            for (k in cgroup40.usersArr) {
+              if (userAdd == cgroup40.usersArr[k].user) {
+                cgroup40.usersArr[k].orders[ApID + "/" + s + "/" + d] = {
+                  appID: ApID,
+                  From: s,
+                  To: d,
+                  Days: diffInDays,
+                };
+
+                cgroup40.usersArr[k].orders = cgroup40.usersArr[k].orders;
+              }
+            }
+          } else {
+            for (k in cgroup40.usersArr) {
+              for (r in cgroup40.usersArr[k].orders) {
+                if (cgroup40.usersArr[k].orders[r].appID == ApID) {
+                  Fromate = new Date(cgroup40.usersArr[k].orders[r].To);
+                  ToDate = new Date(cgroup40.usersArr[k].orders[r].From);
+
+                  if (
+                    date1.getTime() <= Fromate.getTime() &&
+                    date1.getTime() >= ToDate.getTime()
+                  ) {
+                    alert("Chosen date are tooken, select other date");
+                    return;
+                  }
+                  if (
+                    date2.getTime() <= Fromate.getTime() &&
+                    date2.getTime() >= ToDate.getTime()
+                  ) {
+                    alert("Chosen date are tooken, select other date");
+                    return;
+                  }
+                }
+              }
+            }
+            userAdd = cgroup40.loginUser[cgroup40.loginUser.length - 1].user;
+
+            for (k in cgroup40.usersArr) {
+              if (userAdd == cgroup40.usersArr[k].user) {
+                cgroup40.usersArr[k].orders[ApID + "/" + s + "/" + d] = {
+                  appID: ApID,
+                  From: s,
+                  To: d,
+                  Days: diffInDays,
+                };
+                cgroup40.usersArr[k].orders = cgroup40.usersArr[k].orders;
+              }
+            }
+          }
+
+          cgroup40.loginUser[0].app = ApID;
+
+          localStorage["cgroup40"] = JSON.stringify(cgroup40);
+
+          alert("These dates are free, you are taken to the payment page");
+          window.location.href = `Payment.html?AppID=${ApID}`;
+        } else {
+          alert("Inserted date are incorrect");
+        }
+      }
+    </script>
+  </head>
+
+  <body onload="init()">
+    <div class="container-fluid">
+      <!--Header-->
+      <div class="container-pad" id="property-listings">
+        <div class="row">
+          <div class="col">
+            <a href="HomePage after register.html" id="logo">
+              <img src="airbnb_logo.jpg" />
+            </a>
+          </div>
+        </div>
+        <div class="row header Orders">
+          <div class="col">
+            <a href="Favorites.html">
+              <input type="button" value="My Wish List" class="btn" />
+            </a>
+            <a href="Orders.html">
+              <input type="button" class="btn" value="My Orders" />
+            </a>
+            <a href="Login.html">
+              <input
+                type="button"
+                class="btn"
+                value="Log Out"
+                onclick="clearLS()"
+              />
+            </a>
+          </div>
+        </div>
+      </div>
+      <div id="body"></div>
+    </div>
+  </body>
+</html>

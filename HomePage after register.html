@@ -1,0 +1,347 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Airbnb</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script src="apartments.js"></script>
+    <script src="functions.js"></script>
+    <link href="OurStyle.css" rel="stylesheet" />
+
+    <script>
+        function initAppartments() {
+            getFromLS();
+            getAppartments();
+        }
+
+        function getAppartments() {
+            let str = "";
+            for (var k in arr) {
+                str += '<div class="col-sm-4 col-md-3">';
+                str += '<div class="brdr bgc-fff pad-10 box-shad btm-mrg-20 property-listing">';
+                str += '<div class="media">';
+                str += `<div class="container">`;
+                str += `<img src= ${arr[k].picture_url} alt="image" class="img-responsive">`;
+                str += `<button class="btn" id="${k}" onclick="addFavorite(${arr[k].id},${k})" ondblclick="removeHeart(${arr[k].id},${k})"><span class="glyphicon glyphicon-heart"></span></button></div>`;
+                str += `<a href= ${arr[k].listing_url} target="_blank">`;
+                str += '<h3 class="media-heading"> ' + arr[k].name + "</h3></a>";
+                str += '<p class="list-inline mrg-0 btm-mrg-10 clr-535353"> ID:' +  arr[k].id + "</p>";
+                str += '<p id="hidden-xs">' + arr[k].description + "</p>";
+                str += `<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="getDetails(${k})"> More Details </button>`;
+                str += `<a href="show app.html?AppID=${arr[k].id}"><button type="button" class="btn btn-primary order"> Book Now </button></a>`;
+                str += "</div></div></div>";
+            }
+            document.getElementById("ph").innerHTML = str;
+
+            strcount =  "<h4> There are " +   arr.length + " stays in Amsderdam waiting for you</h4>";
+
+            document.getElementById("ph-count").innerHTML = strcount;
+            countRooms();
+
+            str1 =
+                "<br><h5>Welcome " +
+                cgroup40.loginUser[cgroup40.loginUser.length - 1].userName +
+                "</h5>";
+            document.getElementById("PHeader").innerHTML = str1;
+            HeartsFav();
+        }
+
+        function countRooms() {
+            minRoom = 10;
+            maxRoom = 0;
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i].bedrooms < minRoom) minRoom = arr[i].bedrooms;
+                if (arr[i].bedrooms > maxRoom) maxRoom = arr[i].bedrooms;
+            }
+            strdrop = "<option></option>";
+            for (var j = minRoom; j <= maxRoom; j++) {
+                strdrop += "<option>" + j + "</option>";
+            }
+            strdrop += "<option>All</option>";
+            document.getElementById("dropSel").innerHTML = strdrop;
+        }
+
+        function getRooms(ArrN, insertValue) {
+            count = 0;
+            str = "";
+            if (insertValue == "") {
+                insertValue = "All";
+            }
+            if (insertValue != "All") {
+                for (k in ArrN) {
+                    if (insertValue == ArrN[k].bedrooms) {
+                        str += '<div class="col-sm-4 col-md-3">';
+                        str +=
+                            '<div class="brdr bgc-fff pad-10 box-shad btm-mrg-20 property-listing">';
+                        str += '<div class="media">';
+                        str += `<div class="container">`;
+                        str += `<img src= ${arr[k].picture_url} alt="image" class="img-responsive">`;
+                        str += `<button class="btn" id="${k}" onclick="addFavorite(${arr[k].id},${k})" ondblclick="removeHeart(${arr[k].id},${k})"><span class="glyphicon glyphicon-heart"></span></button></div>`;
+                        str += `<a href= ${arr[k].listing_url} target="_blank">`;
+                        str += '<h3 class="media-heading"> ' + arr[k].name + "</h3></a>";
+                        str += '<p class="list-inline mrg-0 btm-mrg-10 clr-535353"> ID:' + arr[k].id + "</p>";
+                        str += '<p id="hidden-xs">' + arr[k].description + "</p>";
+                        str += `<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="getDetails(${k})"> More Details </button>`;
+                        str += `<a href="show app.html?AppID=${arr[k].id}"><button type="button" class="btn btn-primary order"> Book Now </button></a>`;
+                        str += "</div></div></div>";
+                        count += 1;
+                    }
+                }
+            } else {
+                for (k in ArrN) {
+                    str += '<div class="col-sm-4 col-md-3">';
+                    str += '<div class="brdr bgc-fff pad-10 box-shad btm-mrg-20 property-listing">';
+                    str += '<div class="media">';
+                    str += `<div class="container">`;
+                    str += `<img src= ${arr[k].picture_url} alt="image" class="img-responsive">`;
+                    str += `<button class="btn" id="${k}" onclick="addFavorite(${arr[k].id},${k})" ondblclick="removeHeart(${arr[k].id},${k})"><span class="glyphicon glyphicon-heart"></span></button></div>`;
+                    str += `<a href= ${arr[k].listing_url} target="_blank">`;
+                    str += '<h3 class="media-heading"> ' + arr[k].name + "</h3></a>";
+                    str += '<p class="list-inline mrg-0 btm-mrg-10 clr-535353"> ID:' + arr[k].id + "</p>";
+                    str += '<p id="hidden-xs">' + arr[k].description + "</p>";
+                    str += `<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" onclick="getDetails(${k})"> More Details </button>`;
+                    str += `<a href="show app.html?AppID=${arr[k].id}"><button type="button" class="btn btn-primary order"> Book Now </button></a>`;
+                    str += "</div></div></div>";
+                    count += 1;
+                }
+            }
+            document.getElementById("ph").innerHTML = str;
+
+            if (count == 1) {
+                strcount = "<h4> There is " + count +   " stay in Amsderdam waiting for you</h4>";
+            } else {
+                strcount = "<h4> There are " +   count +  " stays in Amsderdam waiting for you</h4>";
+            }
+            document.getElementById("ph-count").innerHTML = strcount;
+            HeartsFav();
+        }
+
+        function getReview(insertKey) {
+            if (insertKey == "") {
+                return arr;
+            }
+            let num = Number(insertKey);
+            let str = "";
+            NewArr = [];
+            if (num > 5 || num < 0) {
+                alert("Please enter number between 0-5");
+                num = 0;
+            }
+            for (k in arr) {
+                if (Number(arr[k].review_scores_value) >= num) {
+                    NewArr.push(arr[k]);
+                }
+            }
+            return NewArr;
+        }
+
+        function getPrices(ArrN, max, min) {
+            let maxNum = Number(max);
+            let minNum = Number(min);
+            if (min == "") {
+                minNum = 0;
+            }
+            if (max == "") {
+                maxNum = 10000000;
+            }
+            arrPrice = [];
+            for (k in ArrN) {
+                var strArray = ArrN[k].price.split("$");
+                if (Number(strArray[1]) >= minNum && Number(strArray[1]) <= maxNum) {
+                    arrPrice.push(ArrN[k]);
+                }
+            }
+            return arrPrice;
+        }
+
+        function getDetails(index) {
+            let strmodal = "";
+            var newArr = arr[index].amenities.split(",");
+            for (var i = 0; i < newArr.length; i++) {
+                if (i == 0) {
+                    feature = newArr[i].slice(2);
+                    feature2 = feature.slice(0, feature.length - 1);
+                } else if (i == newArr.length - 1) {
+                    feature = newArr[i].slice(2);
+                    feature2 = feature.slice(0, feature.length - 2);
+                } else {
+                    feature = newArr[i].slice(2);
+                    feature2 = feature.slice(0, feature.length - 1);
+                }
+                strmodal += "<p>" + feature2 + "</p>";
+            }
+            document.getElementById("ph-modal").innerHTML = strmodal;
+        }
+
+        function clearAll() {
+            let arrClear = document.getElementsByClassName("clear");
+            for (var i = 0; i < arrClear.length; i++) {
+                arrClear[i].value = "";
+            }
+        }
+
+        function calc(max, min, rating) {
+            var select = document.getElementById("dropSel");
+            var text = select.options[select.selectedIndex].text;
+            if (max == "" && min == "" && rating == "" && text == "") {
+                getAppartments();
+                return;
+            }
+            newA = getReview(rating);
+            newA = getPrices(newA, max, min);
+            getRooms(newA, text);
+        }
+
+        function addFavorite(assetID,divID) {
+            let user = cgroup40.loginUser[0].user;
+            let array = cgroup40.usersArr[user].favorites;
+            counter = 0;
+            for (var i = 0; i < array.length; i++) {
+                if (array[i] == assetID) {
+                    counter++;
+                }
+            }
+            if (counter==0) {
+                cgroup40.usersArr[user].favorites.push(assetID);
+                localStorage["cgroup40"] = JSON.stringify(cgroup40);
+            }
+            document.getElementById(divID).style.color = "#fe595f";
+        }
+
+        function removeHeart(assetID,buttonID) {
+            document.getElementById(buttonID).style.color = "#808080";
+            removeFavorite(assetID);
+        }
+
+        function HeartsFav() {
+            let array = cgroup40.usersArr[cgroup40.loginUser[0].user].favorites;
+            for (var k in arr) {
+                for (var i = 0; i < array.length; i++) {
+                    if (array[i] == arr[k].id) {
+                        document.getElementById(k).style.color = "#fe595f";
+                    }
+                    else { 
+                        document.getElementById(k).style.color = "#808080";
+                    }
+                }
+            }
+        }
+
+    </script>
+</head>
+
+<body onload="initAppartments()">
+    <div class="container-fluid">
+        <!--Header-->
+        <div class="container-pad " id="property-listings">
+            <div class="row">
+                <div class="col-xs-9">
+                    <a href="HomePage after register.html" id="logo">
+                        <img src="airbnb_logo.jpg" />
+                    </a>
+                </div>
+                <div class="col-xs-3" id="PHeader"> welcome</div>
+            </div>
+            <div class="row header">
+                <div class="col">
+                    <a href="Favorites.html">
+                        <input type="button" value="My Wish List" class="btn">
+                    </a>
+                    <a href="Orders.html">
+                        <input type="button" class="btn" value="My Orders">
+                    </a>
+                    <a href="Login.html">
+                        <input type="button" class="btn" value="Log Out" onclick="clearLS()">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="container-pad " id="property-listings">
+            <div class="row">
+                <div class="col">
+                    <h1>Properties For Rent By Airbnb</h1>
+                </div>
+            </div>
+        </div>
+
+            <!--search row-->
+
+            <div class="row" id="search">
+                <!--review scores rating-->
+                <div class="col-sm-3">
+                    <span>Please enter review rating (1-5):</span>
+                    <input class="clear"
+                           id="rating"
+                           type="text"
+                           placeholder="review rating" />
+                </div>
+
+                <!--range price-->
+                <div class="col-sm-6">
+                    <span>Please enter minimum and maximum prices:</span>
+                    <input class="clear"
+                           id="min"
+                           type="text"
+                           placeholder="minimum price" />
+                    <input class="clear"
+                           id="max"
+                           type="text"
+                           placeholder="maximum price" />
+                </div>
+
+                <!--drop list-->
+                <div class="col-sm-3">
+                    <span>Please enter number of rooms:</span>
+                    <select class="clear" id="dropSel"></select>
+                </div>
+
+                <!--filter-->
+                <div class="col-sm-12" id="buttons">
+                    <input type="button"
+                           value="Filter All"
+                           onclick="calc(document.getElementById('max').value,document.getElementById('min').value,document.getElementById('rating').value)" />
+                    <input type="button" value="Clear Filters" onclick="clearAll()" />
+                </div>
+            </div>
+
+            <!--number of assets-->
+            <div class="row">
+                <div class="col" id="ph-count"></div>
+            </div>
+
+        <!--End Header-->
+        <!--Assets-->
+        <div class="row">
+            <div id="ph"></div>
+            <!-- Modal -->
+            <div class="modal" id="myModal">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">
+                                ×
+                            </button>
+                            <h4 class="modal-title">Amenities:</h4>
+                        </div>
+
+                        <div class="modal-body">
+                            <div id="ph-modal"></div>
+                        </div>
+
+                        <div class="modal-footer">
+                            <button type="button"
+                                    class="btn btn-danger"
+                                    data-dismiss="modal">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
